@@ -1,0 +1,36 @@
+# Dev overrides, loaded automatically by `docker compose`:
+# Flask debug server and Vite with hot reload, both on bind-mounted source.
+# Dev images get their own tags so switching modes never runs a stale build.
+
+services:
+  api:
+    image: nyc-transit-api:dev
+    build:
+      target: dev
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+
+  worker:
+    image: nyc-transit-api:dev
+    build:
+      target: dev
+    volumes:
+      - ./backend:/app
+
+  web:
+    image: nyc-transit-web:dev
+    build:
+      target: dev
+    environment:
+      API_PROXY_TARGET: http://api:8000
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./frontend:/app
+      # Keep the image's node_modules instead of the host's (or none).
+      - /app/node_modules
+    ports: !override
+      - "${WEB_PORT:-8080}:5173"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5173/"]
