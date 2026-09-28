@@ -4,3 +4,6 @@ alembic>=1.14,<2
 psycopg[binary]>=3.2,<4
 redis>=5.2,<7
 gunicorn>=23,<24
+gtfs-realtime-bindings>=3,<4
+# Floor matches the gencode version of app/realtime/nyct_subway_pb2.py.
+protobuf>=7.35.1,<8

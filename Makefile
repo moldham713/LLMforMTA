@@ -1,7 +1,10 @@
 COMPOSE ?= docker compose
 PROD_COMPOSE = $(COMPOSE) -f docker-compose.yml
+# Idempotent; also covers db volumes created before the init script existed.
+ENSURE_TEST_DB = $(COMPOSE) exec -T db sh -c \
+	'psql -q -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" -d postgres -f /docker-entrypoint-initdb.d/20-test-db.sql'
 
-.PHONY: up up-prod down logs test lint migrate shell
+.PHONY: up up-prod down logs test test-integration test-live lint migrate load shell
 
 .env:
 	cp .env.example .env
@@ -18,14 +21,27 @@ down: .env
 logs: .env
 	$(COMPOSE) logs -f --tail=100
 
-test: .env
+test: .env  ## Fast unit tier: SQLite and stubs, no services needed
 	$(COMPOSE) run --rm --no-deps --build api pytest
+
+test-integration: .env  ## Real PostGIS (transit_test) and Redis (db 15)
+	$(COMPOSE) up -d --wait db redis
+	$(ENSURE_TEST_DB)
+	$(COMPOSE) run --rm --no-deps --build api pytest -m integration
+
+test-live: .env  ## Opt-in: loads the real MTA feed into transit_test
+	$(COMPOSE) up -d --wait db
+	$(ENSURE_TEST_DB)
+	$(COMPOSE) run --rm --no-deps --build api pytest -m live -s
 
 lint: .env
 	$(COMPOSE) run --rm --no-deps api sh -c "ruff check . && ruff format --check ."
 
 migrate: .env
 	$(COMPOSE) run --rm api alembic upgrade head
+
+load: .env  ## Load static GTFS and the stations dataset into the dev database
+	$(COMPOSE) run --rm api sh -c "flask gtfs load && flask stations load"
 
 shell: .env
 	$(COMPOSE) exec api bash

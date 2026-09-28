@@ -1,0 +1,2 @@
+feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date,feed_version
+MTA New York City Transit,https://www.mta.info/,EN,20260526,20261031,20260826-X-long-term-supplement-trip-ids

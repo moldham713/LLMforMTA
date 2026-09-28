@@ -5,11 +5,17 @@ requires-python = ">=3.12"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra"
+# Unit tier by default; `-m integration` / `-m live` on the command line overrides this.
+addopts = "-ra -m 'not integration and not live'"
+markers = [
+    "integration: needs the real Postgres/PostGIS test database (make test-integration)",
+    "live: downloads real MTA data; opt-in (make test-live)",
+]
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["app/realtime/nyct_subway_pb2.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

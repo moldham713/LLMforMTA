@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     volumes:
       - pgdata:/var/lib/postgresql/data
+      # Single file: mounting the whole directory would hide the image's PostGIS init script.
+      - ./db/init/20-test-db.sql:/docker-entrypoint-initdb.d/20-test-db.sql:ro
     healthcheck:
       # TCP probe: the init-time server only listens on the unix socket.
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
@@ -55,10 +57,10 @@ services:
     command: ["python", "-m", "app.worker"]
     healthcheck:
       test: ["CMD", "python", "-m", "app.worker", "--check"]
-      interval: 10s
+      interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 30s
 
   web:
     image: nyc-transit-web:prod
