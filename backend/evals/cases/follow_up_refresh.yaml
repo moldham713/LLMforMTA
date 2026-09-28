@@ -1,0 +1,25 @@
+# Follow-ups reuse slots; refresh re-fetches and never asks.
+- id: follow-6-86-then-uptown
+  category: follow_up_refresh
+  turns: ["next downtown 6 at 86th", "what about uptown?"]
+  expect: {slots: {complex_id: 397, route: "6", direction: N}, clarify: false, max_turns: 2, followups_call_departures: true}
+- id: follow-1-96-refresh
+  category: follow_up_refresh
+  turns: ["uptown 1 at 96 St", "refresh"]
+  expect: {slots: {complex_id: 310, route: "1", direction: N}, clarify: false, max_turns: 2, followups_call_departures: true}
+- id: follow-7-next-after-that
+  category: follow_up_refresh
+  turns: ["Queens-bound 7 at Grand Central", "and the one after that?"]
+  expect: {slots: {complex_id: 610, route: "7", direction: N}, clarify: false, max_turns: 2, followups_call_departures: true}
+- id: follow-a-125-then-c
+  category: follow_up_refresh
+  turns: ["downtown A at 125th", "what about the C?"]
+  expect: {slots: {complex_id: 153, route: C, direction: S}, clarify: false, max_turns: 2, followups_call_departures: true}
+- id: follow-l-8av-update
+  category: follow_up_refresh
+  turns: ["L at 8 Av to Canarsie", "update"]
+  expect: {slots: {complex_id: 618, route: L, direction: S}, clarify: false, max_turns: 2, followups_call_departures: true}
+- id: follow-q-then-r-then-refresh
+  category: follow_up_refresh
+  turns: ["next uptown Q at Union Sq", "what about the R?", "refresh"]
+  expect: {slots: {complex_id: 602, route: R, direction: N}, clarify: false, max_turns: 3, followups_call_departures: true}

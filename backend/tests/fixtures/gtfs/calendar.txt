@@ -1,6 +1,7 @@
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date
 Saturday,0,0,0,0,0,1,0,20260526,20261031
 Saturday_C1,0,0,0,0,0,1,0,20260526,20261031
+Sunday-H-20260908-20261031,0,0,0,0,0,0,1,20260908,20261031
 Sunday_C8,0,0,0,0,0,0,1,20260526,20261031
 Weekday_C5,1,1,1,1,1,0,0,20260526,20261031
 Weekday_C7,1,1,1,1,1,0,0,20260526,20261031

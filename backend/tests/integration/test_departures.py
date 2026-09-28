@@ -101,7 +101,7 @@ def test_no_trains_showing_attaches_alerts(loaded, rt_store):
     assert result["status"] == "no_trains_showing"
     assert result["departures"] == []
     assert result["alerts"], "a typical route with no trains must say why if it can"
-    assert result["alerts"][0]["category"] == "delay"
+    assert result["alerts"][0]["category"] == "current"
     assert "A" in result["alerts"][0]["route_ids"]
 
 
@@ -151,10 +151,10 @@ def _active(alert) -> bool:
 
 def test_alerts_active_only_delays_first(svc, rt_store):
     everything = rt_store.alerts()
-    alerts = svc.get_alerts()
+    alerts = svc.get_alerts()["alerts"]
 
     assert 0 < len(alerts) < len(everything)
-    ranks = [{"delay": 0, "other": 1, "planned_work": 2}[a["category"]] for a in alerts]
+    ranks = [{"current": 0, "other": 1, "planned": 2}[a["category"]] for a in alerts]
     assert ranks == sorted(ranks)
     assert all(_active(a) for a in alerts)
     assert all(len(a["active_periods"]) <= 3 for a in alerts)
@@ -162,8 +162,8 @@ def test_alerts_active_only_delays_first(svc, rt_store):
 
 
 def test_alerts_by_route_and_station(svc):
-    seven = svc.get_alerts(route="7")
-    at_times_sq = svc.get_alerts(route="7", complex_id=TIMES_SQ)
+    seven = svc.get_alerts(route="7")["alerts"]
+    at_times_sq = svc.get_alerts(route="7", complex_id=TIMES_SQ)["alerts"]
 
     stop_specific = [a for a in seven if a["stop_ids"]]
     assert stop_specific, "fixture has a 7 alert for Queens stops"
@@ -173,8 +173,10 @@ def test_alerts_by_route_and_station(svc):
 
 def test_alerts_by_station_only(svc):
     # Station-only filtering returns just alerts that name one of its stops.
-    assert svc.get_alerts(complex_id=TIMES_SQ) == [
-        a for a in svc.get_alerts() if set(a["stop_ids"]) & {"127", "725", "902", "A27", "R16"}
+    assert svc.get_alerts(complex_id=TIMES_SQ)["alerts"] == [
+        a
+        for a in svc.get_alerts()["alerts"]
+        if set(a["stop_ids"]) & {"127", "725", "902", "A27", "R16"}
     ]
 
 
@@ -207,7 +209,7 @@ def test_alerts_endpoint(rt_app):
 
     assert resp.status_code == 200
     alerts = resp.get_json()["alerts"]
-    assert alerts[0]["category"] == "delay"
+    assert alerts[0]["category"] == "current"
 
 
 def test_health_reports_feed_freshness(rt_app):
@@ -227,3 +229,81 @@ def test_stations_routes_endpoint(rt_app):
 
     gs = next(r for r in body["typical_routes"] if r["route_id"] == "GS")
     assert (gs["label"], gs["stop_id"], gs["south_label"]) == ("S", "902", "Grand Central")
+
+
+# --- alerts freshness ---------------------------------------------------------------
+
+
+def test_alerts_carry_freshness(svc):
+    result = svc.get_alerts(route="A")
+
+    assert result["alerts_available"] is True
+    assert result["alerts_stale"] is False
+    assert result["alerts_as_of"] == "2026-09-28T17:59:52+00:00"  # last good poll
+    assert all(a["alert_type"] for a in result["alerts"])
+
+
+def test_alerts_go_stale_after_three_minutes(loaded, rt_store):
+    result = service(loaded, rt_store, now=FROZEN_NOW + 181).get_alerts(route="A")
+
+    assert result["alerts_stale"] is True
+    assert result["alerts_available"] is True
+
+
+def test_missing_alerts_are_unavailable_not_empty(loaded, rt_store, redis_client):
+    redis_client.delete("alerts:present", "alerts:data")
+
+    departures = service(loaded, rt_store).get_departures(FOURTEENTH_AND_8TH, "A", "N")
+
+    assert departures["alerts"] == []
+    assert departures["alerts_available"] is False
+    assert departures["alerts_stale"] is True
+    assert departures["alerts_as_of"] is None
+
+
+def test_upcoming_alerts_are_flagged_not_active(svc):
+    now_only = svc.get_alerts()["alerts"]
+    soon = svc.get_alerts(upcoming_within=2 * 3600)["alerts"]
+
+    assert all(a["active_now"] for a in now_only)
+    assert len(soon) >= len(now_only)
+    assert {a["id"] for a in soon if a["active_now"]} == {a["id"] for a in now_only}
+
+
+# --- direction_toward ---------------------------------------------------------------
+
+COLUMBUS_CIRCLE, EIGHTH_AV_L = 614, FOURTEENTH_AND_8TH
+
+
+@pytest.mark.parametrize(
+    ("complex_id", "route", "destination", "code"),
+    [
+        (COLUMBUS_CIRCLE, "A", "Brooklyn", "S"),
+        (TIMES_SQ, "1", "Van Cortlandt", "N"),
+        # 8 Av is the L's Manhattan terminal; Canarsie-bound (east) trains are "S".
+        (EIGHTH_AV_L, "L", "Canarsie", "S"),
+        (TIMES_SQ, "1", "the Bronx", "N"),
+        (TIMES_SQ, "1", "South Ferry", "S"),
+        (TIMES_SQ, "7", "Flushing", "N"),
+        (COLUMBUS_CIRCLE, "A", "uptown", "N"),
+    ],
+)
+def test_direction_toward(svc, complex_id, route, destination, code):
+    result = svc.direction_toward(complex_id, route, destination)
+
+    assert result is not None
+    assert result["code"] == code
+    assert result["confidence"] in ("high", "medium")
+
+
+def test_direction_toward_labels(svc):
+    result = svc.direction_toward(EIGHTH_AV_L, "L", "Canarsie")
+
+    assert result["label"] == "Brooklyn"
+    assert result["destination"] == "Canarsie-Rockaway Pkwy"
+
+
+def test_direction_toward_off_route_is_none(svc):
+    assert svc.direction_toward(TIMES_SQ, "1", "Flushing") is None
+    assert svc.direction_toward(TIMES_SQ, "1", "Staten Island") is None
+    assert svc.direction_toward(COLUMBUS_CIRCLE, "A", "zzzz qqqq") is None

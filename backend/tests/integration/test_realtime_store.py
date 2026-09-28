@@ -44,7 +44,8 @@ def test_failure_keeps_data_and_records_error(rt_store, redis_client):
 
 def test_data_keys_expire_but_metadata_does_not(rt_store, redis_client):
     assert 170 <= redis_client.ttl("rt:ace:A31N") <= 180
-    assert 170 <= redis_client.ttl("alerts:data") <= 180
+    assert 890 <= redis_client.ttl("alerts:data") <= 900
+    assert 890 <= redis_client.ttl("alerts:present") <= 900
     assert redis_client.ttl("rt:meta:ace") == -1
 
 

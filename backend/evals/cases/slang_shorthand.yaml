@@ -1,0 +1,27 @@
+# Rider shorthand: bare numbers, abbreviations, nicknames.
+- id: slang-uptown-1-at-96
+  category: slang_shorthand
+  turns: ["uptown 1 at 96"]
+  expect: {slots: {complex_id: 310, route: "1", direction: N}, clarify: false, max_turns: 1}
+- id: slang-6-at-86th-downtown
+  category: slang_shorthand
+  turns: ["the 6 at 86th, downtown"]
+  expect: {slots: {complex_id: 397, route: "6", direction: S}, clarify: false, max_turns: 1}
+- id: slang-dtown-f-w4
+  category: slang_shorthand
+  turns: ["dtown F @ w4"]
+  expect: {slots: {complex_id: 167, route: F, direction: S}, clarify: false, max_turns: 1}
+- id: slang-uptown-a-pabt
+  category: slang_shorthand
+  turns: ["uptown A at PABT"]
+  expect: {slots: {complex_id: 611, route: A, direction: N}, clarify: false, max_turns: 1}
+- id: slang-q-barclays-the-city
+  category: slang_shorthand
+  # "The city" means Manhattan to Brooklynites; asking once is acceptable.
+  turns: ["Q at barclays going to the city"]
+  answers: {direction: "Manhattan"}
+  expect: {slots: {complex_id: 617, route: Q, direction: N}, max_turns: 2}
+- id: slang-dt-4-lex-59
+  category: slang_shorthand
+  turns: ["dt 4 at lex/59"]
+  expect: {slots: {complex_id: 613, route: "4", direction: S}, clarify: false, max_turns: 1}

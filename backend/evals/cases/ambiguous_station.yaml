@@ -1,0 +1,32 @@
+# The station name matches several complexes; the agent must ask, listing lines.
+- id: ambig-86-no-line
+  category: ambiguous_station
+  turns: ["When's the next uptown train at 86 St?"]
+  answers: {station: "the Lexington Av one, 4/5/6", route: "the 6"}
+  expect: {slots: {complex_id: 397, route: "6", direction: N}, clarify: true, max_turns: 3}
+- id: ambig-23-st-downtown
+  category: ambiguous_station
+  turns: ["next downtown train at 23rd st"]
+  answers: {station: "the one on the 6", route: "6"}
+  expect: {slots: {complex_id: 405, route: "6", direction: S}, clarify: true, max_turns: 3}
+- id: ambig-canal-uptown
+  category: ambiguous_station
+  turns: ["When is the next uptown train at Canal St?"]
+  answers: {station: "the 1 train one", route: "1"}
+  expect: {slots: {complex_id: 325, route: "1", direction: N}, clarify: true, max_turns: 3}
+- id: ambig-59-downtown
+  category: ambiguous_station
+  turns: ["next train at 59th street heading downtown"]
+  answers: {station: "Columbus Circle", route: "A"}
+  expect: {slots: {complex_id: 614, route: A, direction: S}, clarify: true, max_turns: 3}
+- id: ambig-125-uptown
+  category: ambiguous_station
+  turns: ["125 St, next uptown train?"]
+  answers: {station: "the 2/3 one on Lenox", route: "2"}
+  expect: {slots: {complex_id: 439, route: "2", direction: N}, clarify: true, max_turns: 3}
+- id: ambig-14-st-downtown-c
+  category: ambiguous_station
+  # "14th" is ambiguous alone, but only one 14 St has the C: no question needed.
+  turns: ["downtown C at 14th"]
+  answers: {station: "8th Av"}
+  expect: {slots: {complex_id: 618, route: C, direction: S}, clarify: false, max_turns: 2}

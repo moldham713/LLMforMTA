@@ -276,7 +276,10 @@ class StationLookup:
             # Relative to the best remaining match, so a strong hit hides weak noise.
             floor = candidates[0][1] * self.relative_cutoff
             candidates = [(c, s) for c, s in candidates if s >= floor]
-        candidates.sort(key=lambda cs: (-cs[1], cs[0].name, cs[0].complex_id))
+        # Among equal scores, bigger stations first: "86 St" means Lexington before Bay Ridge.
+        candidates.sort(
+            key=lambda cs: (-cs[1], -len(cs[0].typical_route_ids), cs[0].name, cs[0].complex_id)
+        )
         return [
             StationMatch(
                 c.complex_id,
@@ -378,3 +381,48 @@ class StationLookup:
                 {"ids": list(stop_ids)},
             ).all()
         return dict(rows)
+
+    def stops_in_borough(self, borough: str, route_ids: set[str]) -> set[str]:
+        """Parent stops in a borough where any of `route_ids` is scheduled."""
+        with self.engine.connect() as conn:
+            rows = conn.execute(
+                text("""
+                    SELECT DISTINCT s.gtfs_stop_id
+                    FROM gtfs.stations s
+                    JOIN gtfs.stop_routes sr ON sr.stop_id = s.gtfs_stop_id
+                    WHERE s.borough = :borough AND sr.route_id = ANY(:route_ids)
+                """),
+                {"borough": borough, "route_ids": list(route_ids)},
+            ).scalars()
+            return set(rows)
+
+    def direction_votes(
+        self, route_ids: set[str], origin_stops: set[str], dest_stops: set[str]
+    ) -> dict[str, int]:
+        """How many scheduled trips on `route_ids` call at an origin stop and later at a
+        destination stop, by the origin platform's direction (N/S)."""
+        origin_platforms = [s + d for s in origin_stops for d in "NS"]
+        dest_platforms = [s + d for s in dest_stops for d in "NS"]
+        with self.engine.connect() as conn:
+            rows = conn.execute(
+                text("""
+                    SELECT right(o.stop_id, 1) AS code, count(DISTINCT o.trip_id) AS trips
+                    FROM gtfs.stop_times o
+                    JOIN gtfs.trips t ON t.trip_id = o.trip_id
+                    JOIN gtfs.stop_times d
+                      ON d.trip_id = o.trip_id AND d.stop_sequence > o.stop_sequence
+                    WHERE o.stop_id = ANY(:origin) AND d.stop_id = ANY(:dest)
+                      AND t.route_id = ANY(:route_ids)
+                    GROUP BY 1
+                """),
+                {"origin": origin_platforms, "dest": dest_platforms, "route_ids": list(route_ids)},
+            ).all()
+        return {r.code: r.trips for r in rows}
+
+    def complex_location(self, complex_id: int) -> tuple[float, float] | None:
+        with self.engine.connect() as conn:
+            row = conn.execute(
+                text("SELECT avg(lat), avg(lon) FROM gtfs.stations WHERE complex_id = :c"),
+                {"c": complex_id},
+            ).one()
+        return (row[0], row[1]) if row[0] is not None else None

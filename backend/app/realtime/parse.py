@@ -85,8 +85,10 @@ def parse_trip_updates(data: bytes, feed: str, now: float) -> tuple[int, list[Ar
     return int(msg.header.timestamp), arrivals
 
 
-# Mercury alert_type -> category. "delay" means an unplanned problem happening now,
-# which includes unplanned suspensions and reroutes, not just slow trains.
+# Mercury alert_type -> category. "current" means an unplanned problem happening now,
+# which includes unplanned suspensions and reroutes, not just slow trains. Reduced Service
+# and Special Schedule lack the "Planned - " prefix but every recorded instance was
+# published weeks ahead (and under an lmm:planned_work id), so they count as planned.
 _PLANNED_TYPES = {"reduced service", "special schedule"}
 _DISRUPTION_WORDS = (
     "delay",
@@ -103,9 +105,9 @@ def categorize(alert_type: str | None) -> str:
         return "other"
     t = alert_type.strip().lower()
     if t.startswith("planned") or t in _PLANNED_TYPES:
-        return "planned_work"
+        return "planned"
     if any(word in t for word in _DISRUPTION_WORDS):
-        return "delay"
+        return "current"
     return "other"
 
 

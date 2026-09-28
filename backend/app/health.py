@@ -4,7 +4,7 @@ from collections.abc import Callable
 from flask import Blueprint, current_app, jsonify
 from sqlalchemy import text
 
-from app.realtime.store import RealtimeStore
+from app.extensions import make_store
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +32,12 @@ def _ping_redis() -> None:
 
 def _feeds() -> dict:
     settings = current_app.extensions["settings"]
-    store = RealtimeStore(current_app.extensions["redis"], settings.rt_ttl_seconds)
-    status = store.feed_status(current_app.extensions["clock"](), settings.rt_stale_seconds)
+    store = make_store(current_app.extensions["redis"], settings)
+    status = store.feed_status(
+        current_app.extensions["clock"](),
+        settings.rt_stale_seconds,
+        settings.rt_alerts_stale_seconds,
+    )
     # Poll errors can quote upstream hosts; the worker logs have the full text.
     return {feed: {k: v for k, v in s.items() if k != "last_error"} for feed, s in status.items()}
 

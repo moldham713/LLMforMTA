@@ -1,0 +1,53 @@
+# Typical routes with nothing in the feed: say so, never an empty answer.
+# The Z runs rush hours only; the fixture was recorded at 1:59 PM on a Monday.
+- id: none-z-canal-downtown
+  category: no_trains_showing
+  turns: ["next downtown Z at Canal St"]
+  expect:
+    slots: {complex_id: 623, route: Z, direction: S}
+    status: no_trains_showing
+    max_turns: 1
+    reply_matches: "no (\\w+ )*trains?|not (seeing|showing)|aren't any|isn't showing|nothing"
+- id: none-z-marcy-manhattan
+  category: no_trains_showing
+  turns: ["Manhattan-bound Z at Marcy Av"]
+  expect:
+    slots: {complex_id: 101, route: Z, direction: S}
+    status: no_trains_showing
+    max_turns: 1
+    reply_matches: "no (\\w+ )*trains?|not (seeing|showing)|aren't any|isn't showing|nothing"
+- id: none-a-125-no-feed
+  category: no_trains_showing
+  setup: {variant: no_ace}
+  turns: ["uptown A at 125 St"]
+  expect:
+    slots: {complex_id: 153, route: A, direction: N}
+    status: no_trains_showing
+    max_turns: 1
+    reply_matches: "no (\\w+ )*trains?|not (seeing|showing)|aren't any|isn't showing|nothing"
+- id: none-e-14-no-feed
+  category: no_trains_showing
+  setup: {variant: no_ace}
+  turns: ["downtown E at 14 St-8 Av"]
+  expect:
+    slots: {complex_id: 618, route: E, direction: S}
+    status: no_trains_showing
+    max_turns: 1
+    reply_matches: "no (\\w+ )*trains?|not (seeing|showing)|aren't any|isn't showing|nothing"
+- id: none-c-86-no-feed
+  category: no_trains_showing
+  setup: {variant: no_ace}
+  turns: ["C train at 86th St going uptown"]
+  expect:
+    slots: {complex_id: 158, route: C, direction: N}
+    status: no_trains_showing
+    max_turns: 1
+    reply_matches: "no (\\w+ )*trains?|not (seeing|showing)|aren't any|isn't showing|nothing"
+- id: none-not-typical-l-times-sq
+  category: no_trains_showing
+  # Either tool may report it (find_station or get_departures); the reply is what counts.
+  turns: ["next L at Times Square going to Brooklyn"]
+  expect:
+    slots: {complex_id: 611, route: L}
+    max_turns: 1
+    reply_matches: "(doesn't|does not|isn't|not).*(stop|run|serve)"

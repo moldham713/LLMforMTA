@@ -1,0 +1,25 @@
+# Direction is given as a destination or borough, not a label.
+- id: dest-a-59-brooklyn
+  category: destination_direction
+  turns: ["Next A at 59 St toward Brooklyn"]
+  expect: {slots: {complex_id: 614, route: A, direction: S}, clarify: false, max_turns: 1}
+- id: dest-1-times-sq-van-cortlandt
+  category: destination_direction
+  turns: ["1 train at Times Sq going to Van Cortlandt Park"]
+  expect: {slots: {complex_id: 611, route: "1", direction: N}, clarify: false, max_turns: 1}
+- id: dest-l-8-av-canarsie
+  category: destination_direction
+  turns: ["L at 8th Av to Canarsie"]
+  expect: {slots: {complex_id: 618, route: L, direction: S}, clarify: false, max_turns: 1}
+- id: dest-7-grand-central-flushing
+  category: destination_direction
+  turns: ["7 at Grand Central going to Flushing, next train?"]
+  expect: {slots: {complex_id: 610, route: "7", direction: N}, clarify: false, max_turns: 1}
+- id: dest-q-union-sq-coney
+  category: destination_direction
+  turns: ["Q at Union Sq heading to Coney Island"]
+  expect: {slots: {complex_id: 602, route: Q, direction: S}, clarify: false, max_turns: 1}
+- id: dest-r-jay-forest-hills
+  category: destination_direction
+  turns: ["R at Jay St-MetroTech to Forest Hills"]
+  expect: {slots: {complex_id: 636, route: R, direction: N}, clarify: false, max_turns: 1}

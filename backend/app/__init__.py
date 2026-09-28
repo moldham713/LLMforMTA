@@ -19,7 +19,8 @@ def create_app(settings: Settings | None = None) -> Flask:
     # Injectable so tests can freeze "now" for realtime data.
     app.extensions["clock"] = time.time
 
-    from .cli import gtfs_cli, stations_cli
+    from .chat_api import bp as chat_bp
+    from .cli import chat_cli, gtfs_cli, stations_cli
     from .health import bp as health_bp
     from .realtime_api import bp as realtime_bp
     from .stations_api import bp as stations_bp
@@ -27,6 +28,8 @@ def create_app(settings: Settings | None = None) -> Flask:
     app.register_blueprint(health_bp)
     app.register_blueprint(stations_bp)
     app.register_blueprint(realtime_bp)
+    app.register_blueprint(chat_bp)
+    app.cli.add_command(chat_cli)
     app.cli.add_command(gtfs_cli)
     app.cli.add_command(stations_cli)
     return app

@@ -3,6 +3,8 @@ route_id,trip_id,service_id,trip_headsign,direction_id,shape_id
 1,ASP26GEN-1038-Sunday-00_007200_1..N03R,Sunday_C8,Van Cortlandt Park-242 St,0,1..N03R
 2,ASP26GEN-2043-Saturday-00_001650_2..S08R,Saturday_C1,Flatbush Av-Brooklyn College,1,2..S08R
 2,ASP26GEN-2043-Saturday-00_015350_2..N08R,Saturday_C1,Wakefield-241 St,0,2..N08R
+2,ASP26GEN-2043-Saturday-00_029650_2..S01R,Saturday_C1,Flatbush Av-Brooklyn College,1,2..S01R
+2,ASP26GEN-2043-Saturday-00_034750_2..N01R,Saturday_C1,Wakefield-241 St,0,2..N01R
 3,ASP26GEN-3043-Saturday-00_000300_3..S88R,Saturday_C1,34 St-Penn Station,1,3..S88R
 3,ASP26GEN-3043-Saturday-00_004500_3..N90R,Saturday_C1,Harlem-148 St,0,3..N90R
 3,ASP26GEN-3043-Saturday-00_032100_3..S01R,Saturday_C1,New Lots Av,1,3..S01R
@@ -10,8 +12,12 @@ route_id,trip_id,service_id,trip_headsign,direction_id,shape_id
 4,ASP26GEN-4044-Saturday-00_000550_4..S01R,Saturday_C1,New Lots Av,1,4..S01R
 4,ASP26GEN-4044-Saturday-00_001400_4..S13R,Saturday_C1,New Lots Av,1,4..S13R
 4,ASP26GEN-4044-Saturday-00_010850_4..N13R,Saturday_C1,Woodlawn,0,4..N13R
+4,ASP26GEN-4044-Saturday-00_033250_4..S06R,Saturday_C1,Crown Hts-Utica Av,1,4..S06R
+4,ASP26GEN-4044-Saturday-00_040450_4..N06R,Saturday_C1,Woodlawn,0,4..N06R
 5,ASP26GEN-5044-Saturday-00_034050_5..S08R,Saturday_C1,Bowling Green,1,5..S08R
 5,ASP26GEN-5044-Saturday-00_041100_5..N75R,Saturday_C1,Eastchester-Dyre Av,0,5..N75R
+5,ASP26GEN-5114-Weekday-00_031000_5..S03R,Weekday_C5,Flatbush Av-Brooklyn College,1,5..S03R
+5,ASP26GEN-5114-Weekday-00_036400_5..N71R,Weekday_C5,Eastchester-Dyre Av,0,5..N71R
 6,ASP26GEN-6031-Sunday-00_000700_6..S01R,Sunday_C8,Brooklyn Bridge-City Hall,1,6..S01R
 6,ASP26GEN-6031-Sunday-00_007500_6..N01R,Sunday_C8,Pelham Bay Park,0,6..N01R
 6X,ASP26GEN-6091-Weekday-00_036900_6..S02R,Weekday_C5,Brooklyn Bridge-City Hall,1,6..S02R
@@ -20,31 +26,50 @@ GS,ASP26GEN-GS013-Saturday-00_036000_GS.N01R,Saturday,Times Sq-42 St,0,GS.N01R
 GS,ASP26GEN-GS013-Saturday-00_036400_GS.S01R,Saturday,Grand Central-42 St,1,GS.S01R
 A,BSP26GEN-A047-Saturday-00_001150_A..S74R,Saturday_C1,Far Rockaway-Mott Av,1,A..S74R
 A,BSP26GEN-A047-Saturday-00_014200_A..N09R,Saturday_C1,Inwood-207 St,0,A..N09R
+A,BSP26GEN-A047-Saturday-00_032950_A..S58R,Saturday_C1,Far Rockaway-Mott Av,1,A..S58R
+A,BSP26GEN-A047-Saturday-00_035800_A..N54R,Saturday_C1,Inwood-207 St,0,A..N54R
 B,BSP26GEN-B088-Weekday-00_032600_B..S65R,Weekday_C5,Brighton Beach,1,B..S65R
 B,BSP26GEN-B088-Weekday-00_035700_B..N65R,Weekday_C5,Bedford Park Blvd,0,B..N65R
 C,BSP26GEN-C026-Saturday-00_033900_C..S05R,Saturday_C1,Euclid Av,1,C..S05R
 C,BSP26GEN-C026-Saturday-00_035300_C..N04R,Saturday_C1,168 St,0,C..N04R
 D,BSP26GEN-D042-Saturday-00_000600_D..S05R,Saturday_C1,Coney Island-Stillwell Av,1,D..S05R
 D,BSP26GEN-D042-Saturday-00_013750_D..N05R,Saturday_C1,Norwood-205 St,0,D..N05R
+D,BSP26GEN-D042-Saturday-00_037250_D..N07R,Saturday_C1,Norwood-205 St,0,D..N07R
+D,BSP26GEN-D042-Saturday-00_038800_D..S07R,Saturday_C1,Coney Island-Stillwell Av,1,D..S07R
 E,BSP26GEN-E043-Saturday-00_001400_E..S04R,Saturday_C1,World Trade Center,1,E..S04R
 E,BSP26GEN-E043-Saturday-00_008850_E..N05R,Saturday_C1,Jamaica Center-Parsons/Archer,0,E..N05R
+E,BSP26GEN-E078-Weekday-00_036650_E..S71R,Weekday_C5,World Trade Center,1,E..S71R
+E,BSP26GEN-E078-Weekday-00_042050_E..N66R,Weekday_C5,Jamaica Center-Parsons/Archer,0,E..N66R
 F,BSP26GEN-F045-Saturday-00_000300_F..S07R,Saturday_C1,Coney Island-Stillwell Av,1,F..S07R
 F,BSP26GEN-F045-Saturday-00_014150_F..N07R,Saturday_C1,Jamaica-179 St,0,F..N07R
+F,BSP26GEN-F081-Weekday-00_030100_F..S54R,Weekday_C5,Coney Island-Stillwell Av,1,F..S54R
+F,BSP26GEN-F081-Weekday-00_030700_F..N54R,Weekday_C5,Jamaica-179 St,0,F..N54R
 FX,BSP26GEN-F081-Weekday-00_042700_F..N56R,Weekday_C5,Jamaica-179 St,0,F..N56R
 FX,BSP26GEN-F081-Weekday-00_098600_F..S56R,Weekday_C5,Coney Island-Stillwell Av,1,F..S56R
+FS,BSP26GEN-FS012-Saturday-00_000000_FS.S01R,Saturday,Prospect Park,1,FS.S01R
+FS,BSP26GEN-FS012-Saturday-00_000950_FS.N01R,Saturday,Franklin Av,0,FS.N01R
+G,BSP26GEN-G038-Saturday-00_001400_G..S14R,Saturday_C1,Church Av,1,G..S14R
+G,BSP26GEN-G038-Saturday-00_006400_G..N16R,Saturday_C1,Court Sq,0,G..N16R
+H,BSP26GEN-H026-Sunday-00_000400_H..S21R,Sunday-H-20260908-20261031,Rockaway Park-Beach 116 St,1,H..S21R
+H,BSP26GEN-H026-Sunday-00_004100_H..N21R,Sunday-H-20260908-20261031,Broad Channel,0,H..N21R
 L,BSP26GEN-L027-Saturday-00_000650_L..N01R,Saturday,8 Av,0,L..N01R
 L,BSP26GEN-L027-Saturday-00_005400_L..S01R,Saturday,Canarsie-Rockaway Pkwy,1,L..S01R
 M,BSP26GEN-M094-Weekday-00_031100_M..S24R,Weekday_C5,Middle Village-Metropolitan Av,1,M..S24R
 M,BSP26GEN-M094-Weekday-00_031400_M..N24R,Weekday_C5,Forest Hills-71 Av,0,M..N24R
 N,BSP26GEN-N058-Saturday-00_001050_N..S20R,Saturday_C1,Coney Island-Stillwell Av,1,N..S20R
 N,BSP26GEN-N058-Saturday-00_011700_N..N20R,Saturday_C1,Astoria-Ditmars Blvd,0,N..N20R
+N,BSP26GEN-N102-Weekday-00_035650_N..N33R,Weekday_C5,Astoria-Ditmars Blvd,0,N..N33R
 W,BSP26GEN-N102-Weekday-00_037300_N..S72R,Weekday_C5,Whitehall St-South Ferry,1,N..S72R
+N,BSP26GEN-N102-Weekday-00_038650_N..S34R,Weekday_C5,Coney Island-Stillwell Av,1,N..S34R
 W,BSP26GEN-N102-Weekday-00_042450_N..N70R,Weekday_C5,Astoria-Ditmars Blvd,0,N..N70R
+W,BSP26GEN-N102-Weekday-00_042850_N..N72R,Weekday_C5,Astoria-Ditmars Blvd,0,N..N72R
 N,BSP26GEN-N102-Weekday-00_045600_N..N16R,Weekday_C5,96 St,0,N..N16R
 N,BSP26GEN-N102-Weekday-00_052550_N..S16R,Weekday_C5,Coney Island-Stillwell Av,1,N..S16R
 W,BSP26GEN-N102-Weekday-00_123650_N..S70R,Weekday_C5,86 St,1,N..S70R
 Q,BSP26GEN-Q022-Saturday-00_001300_Q..S19R,Saturday_C1,Coney Island-Stillwell Av,1,Q..S19R
 Q,BSP26GEN-Q022-Saturday-00_010100_Q..N19R,Saturday_C1,96 St,0,Q..N19R
+Q,BSP26GEN-Q022-Saturday-00_033100_Q..N16R,Saturday_C1,96 St,0,Q..N16R
+Q,BSP26GEN-Q022-Saturday-00_034500_Q..S16R,Saturday_C1,Coney Island-Stillwell Av,1,Q..S16R
 R,BSP26GEN-R053-Sunday-00_001500_R..S27R,Sunday_C8,Bay Ridge-95 St,1,R..S27R
 R,BSP26GEN-R053-Sunday-00_006600_R..N27R,Sunday_C8,Whitehall St-South Ferry,0,R..N27R
 R,BSP26GEN-R053-Sunday-00_031250_R..S71R,Sunday_C8,Bay Ridge-95 St,1,R..S71R
@@ -54,6 +79,12 @@ R,BSP26GEN-R097-Weekday-00_042350_R..N76R,Weekday_C7,96 St,0,R..N76R
 7,L0S1-7-1064-S300_006150_7..N35R,L0S1,Flushing-Main St,0,7..N35R
 7X,L0S1-7-1064-S300_037500_7..S95R,L0S1,34 St-Hudson Yards,1,7..S95R
 7X,L0S1-7-1064-S300_088600_7..N27R,L0S1,Flushing-Main St,0,7..N27R
+J,L0S1-J-1056-S12_000850_J..S12R,L0S1,Broad St,1,J..S12R
+J,L0S1-J-1056-S12_007500_J..N41R,L0S1,Jamaica Center-Parsons/Archer,0,J..N41R
+Z,L0S1-J-1056-S12_044000_J..S16R,L0S1,Broad St,1,J..S16R
+Z,L0S1-J-1056-S12_101450_J..N47R,L0S1,Jamaica Center-Parsons/Archer,0,J..N47R
+SI,L0S1-SI-1017-S136_048800_SI.S03R,L0S1,Tottenville,1,
+SI,L0S1-SI-1017-S136_051100_SI.N03R,L0S1,St George,0,
 C,L0S5-C-2026-S51_033900_C..S05X003,L0S5,Euclid Av,1,
 C,L0S5-C-2026-S51_035300_C..N04X009,L0S5,168 St,0,
 D,L0S5-D-2042-S16_000250_D..S05X022,L0S5,Coney Island-Stillwell Av,1,

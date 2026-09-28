@@ -1,14 +1,16 @@
 """Cut the checked-in test fixture out of a real subway GTFS feed.
 
-Keeps every stop (so realtime destinations have names), but trips only for a handful
-of stations: one trip per (route, station, direction) calling there, and only those
-trips' stop_times at those stations. Routes serving each kept station match the real feed.
+Keeps every stop and the whole stations dataset, plus two kinds of trips: one trip per
+(route, station, direction) at a handful of chosen stations (stop_times at those stations
+only), so routes there match the real feed including reroutes; and one full trip per
+(route, direction) on its usual stop pattern, so every line's stop order is known.
 
     python scripts/build_gtfs_fixture.py GTFS_DIR STATIONS_CSV OUT_DIR
 """
 
 import csv
 import sys
+from collections import Counter, defaultdict
 from pathlib import Path
 
 PARENTS = {
@@ -56,21 +58,39 @@ def main(gtfs_dir: Path, stations_csv: Path, out: Path) -> None:
     trip_by_id = {t["trip_id"]: t for t in trips}
 
     st_path = gtfs_dir / "stop_times.txt"
-    chosen: dict[tuple, str] = {}
     with st_path.open(newline="", encoding="utf-8-sig") as f:
         st_h = csv.DictReader(f).fieldnames
+    chosen: dict[tuple, str] = {}
+    patterns: dict[str, list[str]] = defaultdict(list)
     with st_path.open(newline="", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
+            patterns[row["trip_id"]].append(row["stop_id"])
             if row["stop_id"] in parent_of:
                 t = trip_by_id[row["trip_id"]]
                 key = (t["route_id"], parent_of[row["stop_id"]], t["direction_id"])
                 chosen.setdefault(key, row["trip_id"])
     trip_ids = set(chosen.values())
 
+    # One full trip per (route, direction) on its most common stop pattern, so the fixture
+    # knows every line's stop order (for direction-by-destination) without whole schedules.
+    by_pattern: dict[tuple, Counter] = defaultdict(Counter)
+    example: dict[tuple, str] = {}
+    for trip_id, stop_ids in patterns.items():
+        t = trip_by_id[trip_id]
+        key = (t["route_id"], t["direction_id"])
+        by_pattern[key][tuple(stop_ids)] += 1
+        example.setdefault((key, tuple(stop_ids)), trip_id)
+    full_trips = {example[(key, c.most_common(1)[0][0])] for key, c in by_pattern.items()}
+    del patterns
+
     with st_path.open(newline="", encoding="utf-8-sig") as f:
         stop_times = [
-            r for r in csv.DictReader(f) if r["trip_id"] in trip_ids and r["stop_id"] in parent_of
+            r
+            for r in csv.DictReader(f)
+            if r["trip_id"] in full_trips
+            or (r["trip_id"] in trip_ids and r["stop_id"] in parent_of)
         ]
+    trip_ids |= full_trips
 
     kept_trips = [t for t in trips if t["trip_id"] in trip_ids]
     route_ids = {t["route_id"] for t in kept_trips}
@@ -89,19 +109,12 @@ def main(gtfs_dir: Path, stations_csv: Path, out: Path) -> None:
     write(out / "stop_times.txt", st_h, stop_times)
     write(out / "calendar.txt", cal_h, [c for c in cal if c["service_id"] in service_ids])
     write(out / "calendar_dates.txt", cd_h, [c for c in cd if c["service_id"] in service_ids])
-    write(
-        out / "transfers.txt",
-        tr_h,
-        [t for t in tr if t["from_stop_id"] in parent_of and t["to_stop_id"] in parent_of],
-    )
+    write(out / "transfers.txt", tr_h, tr)
     write(out / "feed_info.txt", fi_h, fi)
 
+    # The whole stations dataset (it is small), so every complex is searchable.
     st_header, stations = read(stations_csv)
-    write(
-        out.parent / "stations.csv",
-        st_header,
-        [s for s in stations if s["GTFS Stop ID"] in PARENTS],
-    )
+    write(out.parent / "stations.csv", st_header, stations)
 
 
 if __name__ == "__main__":

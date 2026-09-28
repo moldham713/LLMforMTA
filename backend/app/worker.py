@@ -75,9 +75,8 @@ def main(argv: list[str]) -> int:
         return 0 if is_alive(max_age) else 1
 
     from app.config import Settings
-    from app.extensions import make_engine, make_redis
+    from app.extensions import make_engine, make_redis, make_store
     from app.realtime.poller import Poller
-    from app.realtime.store import RealtimeStore
 
     settings = Settings.from_env()
     stop = threading.Event()
@@ -102,7 +101,7 @@ def main(argv: list[str]) -> int:
 
     beat()
     if settings.rt_poll_seconds > 0:
-        store = RealtimeStore(make_redis(settings.redis_url), settings.rt_ttl_seconds)
+        store = make_store(make_redis(settings.redis_url), settings)
         poller = Poller(
             store,
             settings.rt_feed_urls,

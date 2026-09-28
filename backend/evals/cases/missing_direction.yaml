@@ -1,0 +1,31 @@
+# Station and line are clear; direction must be asked with the station's labels.
+- id: dir-6-86
+  category: missing_direction
+  turns: ["When's the next 6 at 86th?"]
+  answers: {direction: "downtown"}
+  expect: {slots: {complex_id: 397, route: "6", direction: S}, clarify: true, max_turns: 2}
+- id: dir-7-times-sq
+  category: missing_direction
+  turns: ["7 train at Times Square"]
+  answers: {direction: "Queens"}
+  expect: {slots: {complex_id: 611, route: "7", direction: N}, clarify: true, max_turns: 2}
+- id: dir-a-jay-st
+  category: missing_direction
+  turns: ["next A train at Jay St"]
+  answers: {direction: "Manhattan"}
+  expect: {slots: {complex_id: 636, route: A, direction: N}, clarify: true, max_turns: 2}
+- id: dir-q-union-sq
+  category: missing_direction
+  turns: ["Q at Union Square"]
+  answers: {direction: "uptown"}
+  expect: {slots: {complex_id: 602, route: Q, direction: N}, clarify: true, max_turns: 2}
+- id: dir-4-borough-hall
+  category: missing_direction
+  turns: ["when's the next 4 at Borough Hall"]
+  answers: {direction: "to Manhattan"}
+  expect: {slots: {complex_id: 620, route: "4", direction: N}, clarify: true, max_turns: 2}
+- id: dir-e-14-st
+  category: missing_direction
+  turns: ["E train at 14th Street and 8th Ave"]
+  answers: {direction: "downtown"}
+  expect: {slots: {complex_id: 618, route: E, direction: S}, clarify: true, max_turns: 2}

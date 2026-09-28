@@ -4,7 +4,7 @@ PROD_COMPOSE = $(COMPOSE) -f docker-compose.yml
 ENSURE_TEST_DB = $(COMPOSE) exec -T db sh -c \
 	'psql -q -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" -d postgres -f /docker-entrypoint-initdb.d/20-test-db.sql'
 
-.PHONY: up up-prod down logs test test-integration test-live lint migrate load shell
+.PHONY: up up-prod down logs test test-integration test-live lint migrate load shell eval eval-compare
 
 .env:
 	cp .env.example .env
@@ -33,6 +33,14 @@ test-live: .env  ## Opt-in: loads the real MTA feed into transit_test
 	$(COMPOSE) up -d --wait db
 	$(ENSURE_TEST_DB)
 	$(COMPOSE) run --rm --no-deps --build api pytest -m live -s
+
+eval: .env  ## Agent eval against fixtures with the real model (needs ANTHROPIC_API_KEY). CATEGORY=name filters
+	$(COMPOSE) up -d --wait db redis
+	$(ENSURE_TEST_DB)
+	$(COMPOSE) run --rm --no-deps --build api python -m evals.run $(if $(CATEGORY),--category $(CATEGORY)) $(EVAL_ARGS)
+
+eval-compare: .env  ## Diff the two most recent eval runs
+	$(COMPOSE) run --rm --no-deps api python -m evals.compare
 
 lint: .env
 	$(COMPOSE) run --rm --no-deps api sh -c "ruff check . && ruff format --check ."

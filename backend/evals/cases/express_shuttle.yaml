@@ -1,0 +1,25 @@
+# Express variants (6X, 7X) are the 6 and 7 to riders; "S" resolves by station.
+- id: shuttle-times-sq-to-grand-central
+  category: express_shuttle
+  turns: ["shuttle at Times Square to Grand Central"]
+  expect: {slots: {complex_id: 611, route: S, direction: S}, clarify: false, max_turns: 1, status: ok}
+- id: shuttle-grand-central-to-times-sq
+  category: express_shuttle
+  turns: ["next S train at Grand Central going to Times Square"]
+  expect: {slots: {complex_id: 610, route: S, direction: N}, clarify: false, max_turns: 1}
+- id: express-6-union-sq-uptown
+  category: express_shuttle
+  turns: ["next uptown 6 express at Union Square"]
+  expect: {slots: {complex_id: 602, route: "6", direction: N}, clarify: false, max_turns: 1}
+- id: express-7-grand-central
+  category: express_shuttle
+  turns: ["Queens-bound 7 express at Grand Central"]
+  expect: {slots: {complex_id: 610, route: "7", direction: N}, clarify: false, max_turns: 1}
+- id: sir-st-george
+  category: express_shuttle
+  turns: ["Staten Island Railway at St George toward Tottenville"]
+  expect: {slots: {complex_id: 501, route: SIR, direction: S}, clarify: false, max_turns: 1}
+- id: franklin-shuttle-prospect-park
+  category: express_shuttle
+  turns: ["Franklin Av shuttle at Prospect Park, going to Franklin Av"]
+  expect: {slots: {complex_id: 42, route: S, direction: N}, clarify: false, max_turns: 1}

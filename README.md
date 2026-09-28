@@ -31,6 +31,8 @@ On first run `make up` copies `.env.example` to `.env`. Edit `.env` to change se
 | `make migrate` | `alembic upgrade head`                                         |
 | `make load`    | `flask gtfs load` + `flask stations load`                      |
 | `make shell`   | Bash shell in the running api container                        |
+| `make eval`    | Agent eval with the real model (`CATEGORY=name` filters; needs a key) |
+| `make eval-compare` | Diff the two most recent eval runs                        |
 
 ## Layout
 
@@ -88,3 +90,27 @@ to a bad URL for the worker. `backend/app/realtime/nyct_subway_pb2.py` is genera
 MTA's `nyct-subway.proto`; regenerate with `sh scripts/gen_nyct_proto.sh` in the api
 container. Realtime test fixtures in `backend/tests/fixtures/realtime/` are raw snapshots
 recorded on 2026-09-28 (see `RECORDED`).
+
+## Chat agent
+
+`POST /api/chat` with `{"message": "...", "session_id"?: "...", "location"?: {"lat", "lon"}}`
+returns `{session_id, reply, state: {slots, intent, awaiting}, card?}`; `card` has the same
+shape as `/api/departures`. Needs `ANTHROPIC_API_KEY` in `.env` (503 without it). The model is
+`LLM_MODEL` (default Claude Haiku 4.5).
+
+- `flask chat [--lat 40.73 --lon -73.99] [--trace]`: a terminal session (blank line quits).
+- The agent (`backend/app/agent/`) is plain Python: `core.py` runs the tool loop (max 6
+  model round trips, 20 s budget), `tools.py` wraps the station and departures services,
+  `prompt.py` holds the instructions, `session.py` keeps sessions in Redis for 30 minutes.
+- Every time and alert in a reply must come from a tool result; `get_departures` also
+  refuses to answer for a line or direction the rider never said, and returns the options to
+  ask about instead.
+
+## Evals
+
+`make eval` runs 60+ scripted conversations (`backend/evals/cases/*.yaml`) against the real
+model, the fixture GTFS and the recorded realtime snapshots, with the clock frozen at the
+recording time. It checks final slots, whether a clarifying question was asked, turn count,
+invented numbers (every time or minute count must appear in that turn's tool results), and
+"no delays" claims when alerts couldn't be checked. Results land in `backend/evals/results/`
+(not committed); `make eval-compare` diffs the last two runs.

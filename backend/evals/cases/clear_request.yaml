@@ -1,0 +1,25 @@
+# Everything needed is in the first message: no questions, one turn.
+- id: clear-6-86-downtown
+  category: clear_request
+  turns: ["When's the next downtown 6 at 86th St?"]
+  expect: {slots: {complex_id: 397, route: "6", direction: S}, clarify: false, max_turns: 1, status: ok}
+- id: clear-1-96-uptown
+  category: clear_request
+  turns: ["Next uptown 1 train at 96 St please"]
+  expect: {slots: {complex_id: 310, route: "1", direction: N}, clarify: false, max_turns: 1, status: ok}
+- id: clear-7-grand-central-queens
+  category: clear_request
+  turns: ["Queens-bound 7 at Grand Central, when's the next one?"]
+  expect: {slots: {complex_id: 610, route: "7", direction: N}, clarify: false, max_turns: 1, status: ok}
+- id: clear-a-125-downtown
+  category: clear_request
+  turns: ["downtown A train at 125th Street"]
+  expect: {slots: {complex_id: 153, route: A, direction: S}, clarify: false, max_turns: 1}
+- id: clear-r-union-sq-uptown
+  category: clear_request
+  turns: ["When does the next uptown R leave Union Square?"]
+  expect: {slots: {complex_id: 602, route: R, direction: N}, clarify: false, max_turns: 1, status: ok}
+- id: clear-f-bryant-park-downtown
+  category: clear_request
+  turns: ["Next downtown F at 42nd St-Bryant Park?"]
+  expect: {slots: {complex_id: 609, route: F, direction: S}, clarify: false, max_turns: 1, status: ok}

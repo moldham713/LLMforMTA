@@ -2,8 +2,8 @@
 
 from flask import Blueprint, current_app, jsonify
 
+from app.extensions import make_store
 from app.realtime.departures import DeparturesService, UnknownStation
-from app.realtime.store import RealtimeStore
 from app.stations_api import lookup, number_arg, text_arg
 
 bp = Blueprint("realtime", __name__, url_prefix="/api")
@@ -14,9 +14,10 @@ def departures_service() -> DeparturesService:
     settings = ext["settings"]
     return DeparturesService(
         lookup(),
-        RealtimeStore(ext["redis"], settings.rt_ttl_seconds),
+        make_store(ext["redis"], settings),
         clock=ext["clock"],
         stale_after=settings.rt_stale_seconds,
+        alerts_stale_after=settings.rt_alerts_stale_seconds,
     )
 
 
@@ -47,4 +48,4 @@ def alerts():
     result = departures_service().get_alerts(
         route=text_arg("route"), complex_id=number_arg("complex_id", cast=int)
     )
-    return jsonify(alerts=result)
+    return jsonify(result)

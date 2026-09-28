@@ -89,7 +89,7 @@ def _load_station_rows(conn: Connection, path: Path) -> int:
 
 
 def complex_name(station_names: list[str]) -> str:
-    """ "14 St" + "8 Av" -> "14 St/8 Av"; the most common station name comes first."""
+    """Join station names, most common first: "14 St" + "8 Av" -> "14 St/8 Av"."""
     counts = Counter(station_names)
     ordered = sorted(counts, key=lambda name: (-counts[name], name))
     return "/".join(ordered)

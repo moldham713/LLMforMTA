@@ -8,10 +8,13 @@ Layout:
   alerts:route:{id}     JSON list of alert ids
   alerts:stop:{id}      JSON list of alert ids
   alerts:index          set of the alerts:route/stop keys written last time
+  alerts:present        marker set on every good alerts poll; its absence means "unknown"
 
 Each feed only ever writes its own keys, so a shared platform (e.g. B and C at 86 St)
 merges on read, and one feed failing or refreshing can't clobber another's arrivals.
-Data keys expire, so a dead feed's arrivals age out on their own.
+Data keys expire, so a dead feed's arrivals age out on their own. Alerts keep longer
+(15 min by default): an alert is still worth showing a few minutes after the feed hiccups,
+whereas an arrival time is not.
 """
 
 import json
@@ -30,9 +33,10 @@ def _meta_key(feed: str) -> str:
 
 
 class RealtimeStore:
-    def __init__(self, client: redis.Redis, ttl_seconds: int = 180):
+    def __init__(self, client: redis.Redis, ttl_seconds: int = 180, alerts_ttl_seconds: int = 900):
         self.redis = client
         self.ttl = ttl_seconds
+        self.alerts_ttl = alerts_ttl_seconds
 
     # --- writes (worker) ------------------------------------------------------------
 
@@ -70,16 +74,17 @@ class RealtimeStore:
         pipe.delete("alerts:data")
         if alerts:
             pipe.hset("alerts:data", mapping={a["id"]: json.dumps(a, **_JSON) for a in alerts})
-            pipe.expire("alerts:data", self.ttl)
+            pipe.expire("alerts:data", self.alerts_ttl)
         for key, ids in by_key.items():
-            pipe.set(key, json.dumps(ids, **_JSON), ex=self.ttl)
+            pipe.set(key, json.dumps(ids, **_JSON), ex=self.alerts_ttl)
         vanished = previous - by_key.keys()
         if vanished:
             pipe.delete(*vanished)
         pipe.delete("alerts:index")
         if by_key:
             pipe.sadd("alerts:index", *by_key)
-            pipe.expire("alerts:index", self.ttl)
+            pipe.expire("alerts:index", self.alerts_ttl)
+        pipe.set("alerts:present", int(now), ex=self.alerts_ttl)
         self._mark_success(pipe, ALERTS_FEED, header_ts, now, count=len(alerts))
         pipe.execute()
 
@@ -124,10 +129,15 @@ class RealtimeStore:
             raws = self.redis.hmget("alerts:data", ids) if ids else []
         return [json.loads(r) for r in raws if r]
 
+    def alerts_available(self) -> bool:
+        return bool(self.redis.exists("alerts:present"))
+
     def feed_meta(self, feed: str) -> dict[str, str]:
         return {k.decode(): v.decode() for k, v in self.redis.hgetall(_meta_key(feed)).items()}
 
-    def feed_status(self, now: float, stale_after: float) -> dict[str, dict]:
+    def feed_status(
+        self, now: float, stale_after: float, alerts_stale_after: float | None = None
+    ) -> dict[str, dict]:
         """Freshness per feed. Trip feeds go stale on header age; the alerts header only
         moves when alerts change, so alerts go stale on time since the last good poll."""
         status = {}
@@ -135,13 +145,16 @@ class RealtimeStore:
             meta = self.feed_meta(feed)
             header_ts = int(meta["header_ts"]) if meta.get("header_ts") else None
             last_success = int(meta["last_success"]) if meta.get("last_success") else None
-            basis = last_success if feed == ALERTS_FEED else header_ts
+            if feed == ALERTS_FEED:
+                basis, limit = last_success, alerts_stale_after or stale_after
+            else:
+                basis, limit = header_ts, stale_after
             age = round(now - basis, 1) if basis else None
             status[feed] = {
                 "header_ts": header_ts,
                 "last_success": last_success,
                 "age_seconds": age,
-                "stale": age is None or age > stale_after,
+                "stale": age is None or age > limit,
                 "failures": int(meta.get("failures", 0)),
                 "last_error": meta.get("last_error") or None,
                 "last_error_at": int(meta["last_error_at"]) if meta.get("last_error_at") else None,

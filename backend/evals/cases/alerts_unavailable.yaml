@@ -1,0 +1,51 @@
+# Alerts missing or stale: say delays couldn't be checked; never claim "no delays".
+# (The "no delays" and fabrication checks run on every case; these make them bite.)
+- id: alerts-missing-6-86
+  category: alerts_unavailable
+  setup: {variant: alerts_missing}
+  turns: ["next downtown 6 at 86th"]
+  expect:
+    slots: {complex_id: 397, route: "6", direction: S}
+    max_turns: 1
+    reply_matches: "(couldn't|could not|can't|unable|not able|wasn't able).{0,30}(check|confirm|verify|get|load|see)"
+- id: alerts-missing-any-delays-l
+  category: alerts_unavailable
+  setup: {variant: alerts_missing}
+  turns: ["Any delays on the L right now?"]
+  expect:
+    slots: {route: L}
+    max_turns: 1
+    reply_matches: "(couldn't|could not|can't|unable|not able|wasn't able).{0,30}(check|confirm|verify|get|load|see)"
+- id: alerts-missing-q-coney
+  category: alerts_unavailable
+  setup: {variant: alerts_missing}
+  turns: ["Coney Island bound Q at Union Sq, is it running ok?"]
+  expect:
+    slots: {complex_id: 602, route: Q, direction: S}
+    max_turns: 1
+    reply_matches: "(couldn't|could not|can't|unable|not able|wasn't able).{0,30}(check|confirm|verify|get|load|see)"
+- id: alerts-stale-1-96
+  category: alerts_unavailable
+  setup: {variant: alerts_stale}
+  turns: ["uptown 1 at 96, any delays?"]
+  expect:
+    slots: {complex_id: 310, route: "1", direction: N}
+    max_turns: 1
+    reply_matches: "(couldn't|could not|can't|unable|not able|wasn't able).{0,30}(check|confirm|verify|get|load|see)"
+- id: alerts-stale-7-queens
+  category: alerts_unavailable
+  setup: {variant: alerts_stale}
+  turns: ["Is the 7 running ok? Queens-bound at Grand Central"]
+  expect:
+    slots: {complex_id: 610, route: "7", direction: N}
+    max_turns: 1
+    reply_matches: "(couldn't|could not|can't|unable|not able|wasn't able).{0,30}(check|confirm|verify|get|load|see)"
+- id: feeds-stale-1-96
+  category: alerts_unavailable
+  # Every feed is 200s old: times must be reported "as of" the snapshot.
+  setup: {clock_offset: 200}
+  turns: ["uptown 1 at 96 St"]
+  expect:
+    slots: {complex_id: 310, route: "1", direction: N}
+    max_turns: 1
+    reply_matches: "as of|1:59"

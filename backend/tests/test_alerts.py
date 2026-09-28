@@ -13,21 +13,21 @@ SNAPSHOT_NOW = 1790618392
 @pytest.mark.parametrize(
     ("alert_type", "category"),
     [
-        ("Delays", "delay"),
-        ("Some Delays", "delay"),
-        ("Severe Delays", "delay"),
-        ("Expect Delays", "delay"),
-        ("Part Suspended", "delay"),
-        ("Suspended", "delay"),
-        ("Trains Rerouted", "delay"),
-        ("Stops Skipped", "delay"),
-        ("Express to Local", "delay"),
-        ("Planned - Part Suspended", "planned_work"),
-        ("Planned - Stops Skipped", "planned_work"),
-        ("Planned - Express to Local", "planned_work"),
-        ("Planned - Reroute", "planned_work"),
-        ("Reduced Service", "planned_work"),
-        ("Special Schedule", "planned_work"),
+        ("Delays", "current"),
+        ("Some Delays", "current"),
+        ("Severe Delays", "current"),
+        ("Expect Delays", "current"),
+        ("Part Suspended", "current"),
+        ("Suspended", "current"),
+        ("Trains Rerouted", "current"),
+        ("Stops Skipped", "current"),
+        ("Express to Local", "current"),
+        ("Planned - Part Suspended", "planned"),
+        ("Planned - Stops Skipped", "planned"),
+        ("Planned - Express to Local", "planned"),
+        ("Planned - Reroute", "planned"),
+        ("Reduced Service", "planned"),
+        ("Special Schedule", "planned"),
         ("Boarding Change", "other"),
         ("Station Notice", "other"),
         ("Extra Service", "other"),
@@ -44,7 +44,7 @@ def test_snapshot_normalizes():
 
     assert header_ts == 1790618008
     assert len(alerts) > 100
-    assert {a["category"] for a in alerts} == {"delay", "planned_work", "other"}
+    assert {a["category"] for a in alerts} == {"current", "planned", "other"}
     a = alerts[0]
     assert set(a) == {
         "id", "route_ids", "stop_ids", "alert_type", "header", "description",
